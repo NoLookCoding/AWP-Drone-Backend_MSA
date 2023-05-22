@@ -1,22 +1,27 @@
 package com.nolookcoding.productservice.domain;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@Entity
 @Getter
 @RequiredArgsConstructor
-public class Category extends BaseEntity {
+public enum Category {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CATEGORY_ID")
-    private Long id;
+    PERFORMANCE("PERFORMANCE"), // 공연용
+    FILM("FILM"), // 촬영용
+    DISTRIBUTION("DISTRIBUTION"), // 물류용
+    RECONNAISSANCE("RECONNAISSANCE"), // 정찰용
+    ATTACK("ATTACK"), // 공격용
+    MANAGE("MANAGE"); // (시설)관리용
 
-    @Column(nullable = false)
-    private String name;
+    private final String name;
 
-    @Column(nullable = false)
-    private String description;
+    public static Category findCategoryByString(String category) {
+        for (Category c : Category.values()) {
+            if (c.name.equalsIgnoreCase(category))
+                return c;
+        }
+        return null;
+    }
+
 }

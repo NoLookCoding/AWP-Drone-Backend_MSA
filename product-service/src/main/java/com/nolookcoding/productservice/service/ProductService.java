@@ -1,13 +1,13 @@
 package com.nolookcoding.productservice.service;
 
-import com.nolookcoding.productservice.domain.Category;
 import com.nolookcoding.productservice.domain.Product;
-import com.nolookcoding.productservice.dto.CategoryDTO;
 import com.nolookcoding.productservice.dto.DetailProductDTO;
+import com.nolookcoding.productservice.dto.FiltersOfProductList;
+import com.nolookcoding.productservice.dto.ProductListDTO;
 import com.nolookcoding.productservice.dto.ProductRegisterDTO;
-import com.nolookcoding.productservice.repository.CategoryRepository;
 import com.nolookcoding.productservice.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,12 +18,10 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
+    private final HashtagService hashtagService;
 
     @Transactional
     public Long create(ProductRegisterDTO prDTO) throws Exception {
-
-        Category category = categoryRepository.findById(prDTO.getCategoryId()).orElseThrow(Exception::new);
 
         Product product;
         Long productId;
@@ -33,12 +31,14 @@ public class ProductService {
                     .name(prDTO.getProductName())
                     .price(prDTO.getProductPrice())
                     .description(prDTO.getProductDescription())
-                    .category(category)
+                    .category(prDTO.getCategory())
                     .imageUrl(prDTO.getImgUrl())
                     .stockQuantity(prDTO.getStockQuantity())
-                    .hashtags(prDTO.getHashtags())
                     .build();
             productId = productRepository.save(product).getId();
+            if (prDTO.getHashtags() != null) {
+                hashtagService.saveHashtagOfProduct(prDTO.getHashtags(), productId);
+            }
         } catch (Exception e) {
             throw new Exception();
         }
@@ -48,10 +48,16 @@ public class ProductService {
     @Transactional
     public void modify(Long productId, ProductRegisterDTO prDTO) throws Exception {
         Product product = productRepository.findById(productId).orElseThrow(Exception::new);
-        Category category = categoryRepository.findById(prDTO.getCategoryId()).orElseThrow(Exception::new);
 
         try {
-            product.updateProduct(prDTO.getProductName(), prDTO.getProductPrice(), prDTO.getProductDescription(), prDTO.getStockQuantity(), category, prDTO.getHashtags(), prDTO.getImgUrl());
+            product.updateProduct(prDTO.getProductName()
+                    , prDTO.getProductPrice()
+                    , prDTO.getProductDescription()
+                    , prDTO.getStockQuantity()
+                    , prDTO.getCategory()
+                    , prDTO.getImgUrl());
+
+            hashtagService.modifyHashtagOfProduct(prDTO.getHashtags(), productId);
         } catch (Exception e) {
             throw new Exception();
         }
@@ -75,7 +81,7 @@ public class ProductService {
                     .productDescription(product.getDescription())
                     .productName(product.getName())
                     .productPrice(product.getPrice())
-                    .hashtags(product.getHashtags())
+                    .hashtags(hashtagService.convertStringHashtags(product.getHashtags()))
                     .imgUrl(product.getImageUrl())
                     .build();
         } catch (Exception e) {
@@ -94,16 +100,10 @@ public class ProductService {
         return product.getStockQuantity() - inputQuantity >= 0;
     }
 
+
     @Transactional
-    public List<CategoryDTO> getCategoryList() throws Exception {
-        try {
-            List<Category> categories = categoryRepository.findAll();
-            return categories.stream().map(c -> CategoryDTO.builder()
-                    .categoryId(c.getId())
-                    .categoryName(c.getName())
-                    .categoryDescription(c.getDescription()).build()).toList();
-        } catch (Exception e) {
-            throw new Exception();
-        }
+    public List<ProductListDTO> getAllProducts(FiltersOfProductList filtersOfProductList, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return productRepository.searchAllProduct(filtersOfProductList, pageRequest);
     }
 }

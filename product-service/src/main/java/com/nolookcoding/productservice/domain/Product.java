@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -27,32 +30,30 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private int stockQuantity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CATEGORY_ID")
+    @Enumerated(EnumType.STRING)
     private Category category;
 
-    private String hashtags;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
+    private List<Hashtag> hashtags = new ArrayList<>();
 
     private String imageUrl;
 
     @Builder
-    public Product(String name, int price, String description, int stockQuantity, Category category, String hashtags, String imageUrl) {
+    public Product(String name, int price, String description, int stockQuantity, Category category, String imageUrl) {
         this.name = name;
         this.price = price;
         this.description = description;
         this.stockQuantity = stockQuantity;
         this.category = category;
-        this.hashtags = hashtags;
         this.imageUrl = imageUrl;
     }
 
-    public void updateProduct(String name, int price, String description, int stockQuantity, Category category, String hashtags, String imageUrl) {
+    public void updateProduct(String name, int price, String description, int stockQuantity, Category category, String imageUrl) {
         this.name = name;
         this.price = price;
         this.description = description;
         this.stockQuantity = stockQuantity;
         this.category = category;
-        this.hashtags = hashtags;
         this.imageUrl = imageUrl;
     }
 }
