@@ -3,8 +3,13 @@ package com.nolookcoding.productservice.dto;
 import com.nolookcoding.productservice.domain.Category;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
+@NoArgsConstructor
 public class DetailProductDTO {
     private Long productId;
     private String productName;
@@ -12,11 +17,11 @@ public class DetailProductDTO {
     private String productDescription;
     private int stockQuantity;
     private Category category;
-    private String hashtags;
+    private List<String> hashtags = new ArrayList<>();
     private String imgUrl;
 
     @Builder
-    public DetailProductDTO(Long productId, String productName, int productPrice, String productDescription, int stockQuantity, Category category, String hashtags, String imgUrl) {
+    public DetailProductDTO(Long productId, String productName, int productPrice, String productDescription, int stockQuantity, Category category, List<String> hashtags, String imgUrl) {
         this.productId = productId;
         this.productName = productName;
         this.productPrice = productPrice;
