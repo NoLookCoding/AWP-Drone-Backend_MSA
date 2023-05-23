@@ -1,12 +1,16 @@
 package com.nolookcoding.userservice.service;
 
 import com.nolookcoding.userservice.domain.User;
+import com.nolookcoding.userservice.dto.LoginDto;
 import com.nolookcoding.userservice.dto.UserGetIdDto;
 import com.nolookcoding.userservice.dto.UserJoinDto;
 import com.nolookcoding.userservice.dto.UserUpdateDto;
 import com.nolookcoding.userservice.repository.UserRepository;
 import java.util.Optional;
+import java.util.UUID;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -77,6 +81,18 @@ public class UserServiceImpl implements UserService {
                 userInput.getPhone().matches(phoneRegex) &&
                 userInput.getPassword().matches(passwordRegex) &&
                 userInput.getEmail().matches(emailRegex);
+    }
+
+    @Override
+    public User login(LoginDto loginInput) {
+        User user = userRepository.findByUserId(loginInput.getUserId()).orElseThrow(() -> {
+            throw new IllegalArgumentException();
+        });
+
+        if (!user.getPassword().equals(loginInput.getUserPassword())) {
+            throw new IllegalArgumentException();
+        }
+        return user;
     }
 
 }

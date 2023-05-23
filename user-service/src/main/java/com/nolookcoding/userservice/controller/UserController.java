@@ -1,5 +1,7 @@
 package com.nolookcoding.userservice.controller;
 
+import com.nolookcoding.userservice.domain.User;
+import com.nolookcoding.userservice.dto.LoginDto;
 import com.nolookcoding.userservice.dto.UserGetIdDto;
 import com.nolookcoding.userservice.dto.UserJoinDto;
 import com.nolookcoding.userservice.dto.UserUpdateDto;
@@ -53,5 +55,11 @@ public class UserController {
     @PostMapping("/users/validation")
     public ResponseEntity<Boolean> inputValidation(@ModelAttribute UserJoinDto userInput) {
         return new ResponseEntity<Boolean>(userService.inputValidation(userInput), HttpStatus.OK);
+    }
+
+    @PostMapping("/users/login")
+    public ResponseEntity<User> login(@ModelAttribute LoginDto loginInput) {
+        User loginUser = userService.login(loginInput);
+        return new ResponseEntity<>(loginUser, HttpStatus.OK);
     }
 }
