@@ -76,12 +76,24 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
             return null;
 
         switch (category) {
-            case FILM -> product.category.eq(Category.FILM);
-            case PERFORMANCE -> product.category.eq(Category.PERFORMANCE);
-            case RECONNAISSANCE -> product.category.eq(Category.RECONNAISSANCE);
-            case DISTRIBUTION -> product.category.eq(Category.DISTRIBUTION);
-            case ATTACK -> product.category.eq(Category.ATTACK);
-            case MANAGE -> product.category.eq(Category.MANAGE);
+            case FILM -> {
+                return product.category.eq(Category.FILM);
+            }
+            case PERFORMANCE -> {
+                return product.category.eq(Category.PERFORMANCE);
+            }
+            case RECONNAISSANCE -> {
+                return product.category.eq(Category.RECONNAISSANCE);
+            }
+            case DISTRIBUTION -> {
+                return product.category.eq(Category.DISTRIBUTION);
+            }
+            case ATTACK -> {
+                return product.category.eq(Category.ATTACK);
+            }
+            case MANAGE -> {
+                return product.category.eq(Category.MANAGE);
+            }
         }
         return null;
     }
@@ -92,9 +104,15 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         }
 
         switch (sortStrategy) {
-            case NAME -> new OrderSpecifier<>(Order.ASC, product.name);
-            case PRICE -> new OrderSpecifier<>(Order.ASC, product.price);
-            case CHRONOLOGICAL -> new OrderSpecifier<>(Order.DESC, product.id);
+            case NAME -> {
+                return new OrderSpecifier<>(Order.ASC, product.name);
+            }
+            case PRICE -> {
+                return new OrderSpecifier<>(Order.ASC, product.price);
+            }
+            case CHRONOLOGICAL -> {
+                return new OrderSpecifier<>(Order.DESC, product.id);
+            }
         }
         return new OrderSpecifier<>(Order.DESC, product.id);
     }
