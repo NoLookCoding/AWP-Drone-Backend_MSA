@@ -2,6 +2,7 @@ package com.nolookcoding.userservice.service;
 
 import com.nolookcoding.userservice.domain.User;
 import com.nolookcoding.userservice.dto.UserGetIdDto;
+import com.nolookcoding.userservice.dto.UserJoinDto;
 import com.nolookcoding.userservice.dto.UserUpdateDto;
 import com.nolookcoding.userservice.repository.UserRepository;
 import java.util.Optional;
@@ -21,18 +22,7 @@ public class UserServiceImpl implements UserService {
 
     public void update(Long id, UserUpdateDto request) {
         User user = this.findOne(id);
-        if (request.getAddress() != null) {
-            user.updateAddress(request.getAddress());
-        }
-
-        if (request.getEmail() != null) {
-            user.updateEmail(request.getEmail());
-        }
-
-        if (request.getPhone() != null) {
-            user.updatePhone(request.getPhone());
-        }
-
+        user.updateInfo(request);
         this.userRepository.save(user);
     }
 
@@ -58,9 +48,35 @@ public class UserServiceImpl implements UserService {
         return user.getUserId();
     }
 
-    public Boolean duplicateCheck(String inputId) {
+    public Boolean duplicateIdCheck(String inputId) {
         Optional<User> user = userRepository.findByUserId(inputId);
         return user.isPresent();
+    }
+
+    @Override
+    public void updatePassword(Long id, String origin, String change) {
+        if (origin.equals(change)) {
+            throw new IllegalArgumentException();
+        }
+
+        User user = userRepository.findById(id).orElseThrow(() -> {
+            throw new RuntimeException();
+        });
+        user.updatePassword(change);
+        userRepository.save(user);
+    }
+
+    @Override
+    public Boolean inputValidation(UserJoinDto userInput) {
+        String phoneRegex = "^\\d{2,3}\\d{3,4}\\d{4}$";
+        String userIdRegex = "^[a-zA-Z0-9]*$";
+        String passwordRegex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[@#$%^&+=])(?=\\S+$)$";
+        String emailRegex = "[0-9a-zA-Z]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$";
+
+        return userInput.getUserId().matches(userIdRegex) &&
+                userInput.getPhone().matches(phoneRegex) &&
+                userInput.getPassword().matches(passwordRegex) &&
+                userInput.getEmail().matches(emailRegex);
     }
 
 }

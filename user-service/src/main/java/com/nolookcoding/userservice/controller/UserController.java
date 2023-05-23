@@ -9,11 +9,7 @@ import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,12 +29,12 @@ public class UserController {
     }
 
     @PostMapping({"/users/{inputId}"})
-    public ResponseEntity<Boolean> duplicateCheck(@PathVariable String inputId) {
-        return new ResponseEntity(userService.duplicateCheck(inputId), HttpStatus.OK);
+    public ResponseEntity<Boolean> duplicateIdCheck(@PathVariable String inputId) {
+        return new ResponseEntity(userService.duplicateIdCheck(inputId), HttpStatus.OK);
     }
 
     @PostMapping({"/users/id"})
-    public ResponseEntity<String> getUserId(UserGetIdDto request) {
+    public ResponseEntity<String> getUserId(@ModelAttribute UserGetIdDto request) {
         return new ResponseEntity(userService.findUserId(request), HttpStatus.OK);
     }
 
@@ -46,5 +42,16 @@ public class UserController {
     public ResponseEntity<Objects> delete(@PathVariable Long userId) {
         userService.delete(userId);
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PostMapping("/users/password")
+    public ResponseEntity<Objects> updatePassword(@RequestParam Long userId, @RequestParam String origin, @RequestParam String change) {
+        userService.updatePassword(userId, origin, change);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PostMapping("/users/validation")
+    public ResponseEntity<Boolean> inputValidation(@ModelAttribute UserJoinDto userInput) {
+        return new ResponseEntity<Boolean>(userService.inputValidation(userInput), HttpStatus.OK);
     }
 }

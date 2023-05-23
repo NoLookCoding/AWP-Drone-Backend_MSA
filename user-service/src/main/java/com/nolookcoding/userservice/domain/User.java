@@ -1,5 +1,6 @@
 package com.nolookcoding.userservice.domain;
 
+import com.nolookcoding.userservice.dto.UserUpdateDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -53,6 +54,14 @@ public class User {
         this.email = email;
     }
 
+    public void updateInfo(UserUpdateDto request) {
+        this.address = request.getAddress();
+        this.phone = request.getPhone();
+
+        if (request.getEmail() != null) {
+            this.email = request.getEmail();
+        }
+    }
     public void updateAddress(String reqAddress) {
         this.address = reqAddress;
     }
@@ -63,6 +72,10 @@ public class User {
 
     public void updatePhone(String reqPhone) {
         this.phone = reqPhone;
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
     }
 
 }
