@@ -81,6 +81,8 @@ public class ProductService {
                     .productDescription(product.getDescription())
                     .productName(product.getName())
                     .productPrice(product.getPrice())
+                    .stockQuantity(product.getStockQuantity())
+                    .category(product.getCategory())
                     .hashtags(hashtagService.convertStringHashtags(product.getHashtags()))
                     .imgUrl(product.getImageUrl())
                     .build();
