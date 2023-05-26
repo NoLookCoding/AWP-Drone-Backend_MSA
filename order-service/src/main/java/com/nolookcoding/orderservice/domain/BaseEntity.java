@@ -22,5 +22,9 @@ public abstract class BaseEntity {
     @LastModifiedDate
     private LocalDateTime modifiedDate;
 
-    private String dataState;
+    private String dataState = null;
+
+    public void updateDataState(String state) {
+        this.dataState = state;
+    }
 }
