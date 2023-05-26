@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // 소스 코드 체크아웃
+                git 'https://github.com/NoLookCoding/AWP_Backend'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                // 그레이들 빌드
+                sh 'gradle build'
+            }
+        }
+        
+        stage('Deploy') {
+            steps {
+                // 배포 스크립트 실행
+                sh './deploy.sh'
+            }
+        }
+    }
+}
