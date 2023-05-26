@@ -1,10 +1,7 @@
 package com.nolookcoding.userservice.service;
 
 import com.nolookcoding.userservice.domain.User;
-import com.nolookcoding.userservice.dto.LoginDto;
-import com.nolookcoding.userservice.dto.UserGetIdDto;
-import com.nolookcoding.userservice.dto.UserJoinDto;
-import com.nolookcoding.userservice.dto.UserUpdateDto;
+import com.nolookcoding.userservice.dto.*;
 
 public interface UserService {
     void join(User user);
@@ -19,11 +16,13 @@ public interface UserService {
 
     String findUserId(UserGetIdDto userRequest);
 
-    Boolean duplicateIdCheck(String inputId);
+    Boolean isDuplicateId(String inputId);
 
-    void updatePassword(Long id, String origin, String change);
+    void updatePassword(Long id, PasswordUpdateDto request);
 
     Boolean inputValidation(UserJoinDto userInput);
 
     User login(LoginDto loginInput);
+
+    Long validateSession(String value);
 }

@@ -2,10 +2,9 @@ package com.nolookcoding.userservice.domain;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,42 +12,28 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class SessionManager {
 
-    private static Map<String, String> store = new ConcurrentHashMap<>();
+    private static Map<String, Long> store = new ConcurrentHashMap<>();
 
-    public void createSession(String value, HttpServletResponse response) {
+    public Cookie createSession(User user) {
         String token = UUID.randomUUID().toString();
-        store.put(token, value);
         Cookie cookie = new Cookie(SessionConst.sessionId, token);
-        response.addCookie(cookie);
+        store.put(token, user.getIndex());
+        return cookie;
     }
 
-    public String getSession(HttpServletRequest request) {
-        Cookie sessionCookie = findCookie(request);
-
-        if (sessionCookie == null) {
-            return null;
-        }
-
-        return store.get(sessionCookie.getValue());
+    public Long getSession(String value) {
+        return findCookie(value);
     }
 
-    public Cookie findCookie(HttpServletRequest request) {
-        //request 요청에 cookie가 없을 경우 null
-        if (request.getCookies() == null) {
-            return null;
+    public Long findCookie(String value) {
+        if (store.containsKey(value)) {
+            return store.get(value);
         }
-
-        return Arrays.stream(request.getCookies())
-                .filter(cookie -> cookie.getName().equals(SessionConst.sessionId))
-                .findFirst()
-                .orElse(null);
+        return null;
     }
 
-    public void sessionExpire(HttpServletRequest request) {
-        Cookie sessionCookie = findCookie(request);
-        if (sessionCookie != null) {
-            store.remove(sessionCookie.getValue());
-        }
+    public void sessionExpire(String value) {
+        store.remove(value);
+        System.out.println("세션 삭제!");
     }
 }
-
