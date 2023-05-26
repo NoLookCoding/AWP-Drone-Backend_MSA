@@ -13,8 +13,8 @@ public class CartOrderCreateDTO extends OrderBaseInformation {
 
     private List<Long> cartList;
 
-    public CartOrderCreateDTO(Long userId, int totalPrice, String receiver, String address, String phoneNumber, List<Long> cartList, String requestOption) {
-        super(userId, totalPrice, receiver, address, phoneNumber, requestOption);
+    public CartOrderCreateDTO(Long userId, String receiver, String address, String phoneNumber, List<Long> cartList, String requestOption) {
+        super(userId, receiver, address, phoneNumber, requestOption);
         this.cartList = cartList;
     }
 }
