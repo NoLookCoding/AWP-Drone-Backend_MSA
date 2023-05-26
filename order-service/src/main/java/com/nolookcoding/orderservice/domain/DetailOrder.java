@@ -10,9 +10,10 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 @Getter
 @NoArgsConstructor
-public class DetailOrder extends BaseEntity{
+public class DetailOrder extends BaseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "DETAIL_ORDER_ID")
     private Long id;
 
@@ -26,10 +27,10 @@ public class DetailOrder extends BaseEntity{
     private Long productId;
 
     @Builder
-    public DetailOrder(Long id, int quantity, Order order, Long productId) {
-        this.id = id;
+    public DetailOrder(int quantity, Order order, Long productId, String dataState) {
         this.quantity = quantity;
         this.order = order;
         this.productId = productId;
+        updateDataState(dataState);
     }
 }
