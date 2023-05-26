@@ -23,7 +23,6 @@ public interface UserService {
 
     void updatePassword(Long id, String origin, String change);
 
-
     Boolean inputValidation(UserJoinDto userInput);
 
     User login(LoginDto loginInput);

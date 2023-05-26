@@ -21,6 +21,7 @@ public class UserServiceImpl implements UserService {
 
     public void join(User user) {
         System.out.println(user.getAddress());
+        System.out.println(user.getName() + " " + user.getUserId() + " " + user.getEmail());
         this.userRepository.save(user);
     }
 
