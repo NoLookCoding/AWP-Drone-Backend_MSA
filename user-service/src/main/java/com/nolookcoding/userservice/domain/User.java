@@ -18,7 +18,7 @@ public class User {
     private Long index;
     @Column(nullable = false)
     private String dataState;
-    @Column(nullable = false)
+    @Column(nullable = false, name = "USER_ID")
     private String userId;
     @Column(nullable = false)
     private String password;
