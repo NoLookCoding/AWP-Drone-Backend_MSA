@@ -121,7 +121,7 @@ public class OrderAPI {
      * @param newState 변경하고자 하는 상태 (Json)
      * @return X
      */
-    @PostMapping("/{orderId}/order-state")
+    @PutMapping("/{orderId}/order-state")
     public ResponseEntity<Void> updateOrderState(
             @PathVariable("orderId") Long orderId,
             @RequestBody Map<String, String> newState
