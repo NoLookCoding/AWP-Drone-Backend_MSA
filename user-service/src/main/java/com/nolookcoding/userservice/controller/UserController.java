@@ -43,10 +43,15 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-//    @GetMapping("/users/user-profile")
-//    public ResponseEntity<UserProfileDto> getUserProfile(@RequestHeader("JSESSIONID") String value) {
-//
-//    }
+    @GetMapping("/users/user-profile")
+    public ResponseEntity<UserProfileDto> getUserProfile(@RequestHeader("JSESSIONID") String value) {
+        Long userIndex = sessionManager.getSession(value);
+        if (userIndex == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        User user = userService.findOne(userIndex);
+        return new ResponseEntity<>(user.toUserProfile(), HttpStatus.OK);
+    }
 
     @PostMapping({"/users/id"})
     public ResponseEntity<String> getUserId(@RequestBody UserGetIdDto request) {
@@ -110,13 +115,13 @@ public class UserController {
 //        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 //    }
 
-    @PostMapping("logout")
+    @PostMapping("/users/logout")
     public ResponseEntity<Object> logout(@RequestHeader("JSESSIONID") String value) {
         sessionManager.sessionExpire(value);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/session-check")
+    @PostMapping("/users/session-check")
     public ResponseEntity<Long> sessionCheck(@RequestHeader("JSESSIONID") String value) {
         Long sessionRes = userService.validateSession(value);
         // 세션 검증

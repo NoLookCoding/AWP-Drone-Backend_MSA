@@ -1,5 +1,6 @@
 package com.nolookcoding.userservice.domain;
 
+import com.nolookcoding.userservice.dto.UserProfileDto;
 import com.nolookcoding.userservice.dto.UserUpdateDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -52,6 +53,19 @@ public class User {
         this.age = age;
         this.sex = sex;
         this.email = email;
+    }
+
+    public UserProfileDto toUserProfile() {
+        return UserProfileDto.builder()
+                .index(this.index)
+                .userId(this.userId)
+                .name(this.name)
+                .address(this.address)
+                .phone(this.phone)
+                .age(this.age)
+                .sex(this.sex)
+                .email(this.email)
+                .build();
     }
 
     public void updateInfo(UserUpdateDto request) {
