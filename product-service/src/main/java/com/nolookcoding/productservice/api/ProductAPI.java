@@ -131,13 +131,30 @@ public class ProductAPI {
      * @return X (상태 코드로 판단) 구매 가능하면 OK, 아니라면 FORBIDDEN
      * @throws Exception
      */
-    @PostMapping("/{productId}/stock-quantity")
+    @PostMapping("/{productId}/stock-quantity/validate")
     public ResponseEntity<Void> validateStockQuantity(
             @PathVariable("productId") Long productId,
             @RequestBody StockQuantityDTO stockQuantityDTO) throws Exception {
         Boolean purchasable = productService.isPurchasable(productId, stockQuantityDTO.getInputStockQuantity());
 
         return ResponseEntity.status(purchasable ? HttpStatus.OK : HttpStatus.FORBIDDEN).build();
+    }
+
+    /**
+     * 상품 재고 수량 업데이트
+     *
+     * @param productId              업데이트할 상품 ID
+     * @param updateStockQuantityDTO 업데이트할 수량과 기준에 대한 DTO
+     * @return X
+     */
+    @PutMapping("/{productId}/stock-quantity")
+    public ResponseEntity<Void> updateStockQuantity(
+            @PathVariable("productId") Long productId,
+            @RequestBody UpdateStockQuantityDTO updateStockQuantityDTO
+    ) {
+        productService.updateStockQuantity(productId, updateStockQuantityDTO);
+
+        return ResponseEntity.ok().build();
     }
 
 }

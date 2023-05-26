@@ -1,10 +1,7 @@
 package com.nolookcoding.productservice.service;
 
 import com.nolookcoding.productservice.domain.Product;
-import com.nolookcoding.productservice.dto.DetailProductDTO;
-import com.nolookcoding.productservice.dto.FiltersOfProductList;
-import com.nolookcoding.productservice.dto.ProductListDTO;
-import com.nolookcoding.productservice.dto.ProductRegisterDTO;
+import com.nolookcoding.productservice.dto.*;
 import com.nolookcoding.productservice.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -107,5 +104,11 @@ public class ProductService {
     public List<ProductListDTO> getAllProducts(FiltersOfProductList filtersOfProductList, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         return productRepository.searchAllProduct(filtersOfProductList, pageRequest);
+    }
+
+    @Transactional
+    public void updateStockQuantity(Long productId, UpdateStockQuantityDTO updateStockQuantityDTO) {
+        Product product = productRepository.findById(productId).orElseThrow(RuntimeException::new);
+        product.updateStockQuantity(updateStockQuantityDTO.getQuantity(), updateStockQuantityDTO.isAddable());
     }
 }

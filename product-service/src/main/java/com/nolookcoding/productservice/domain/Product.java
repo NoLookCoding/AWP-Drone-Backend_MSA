@@ -56,4 +56,11 @@ public class Product extends BaseEntity {
         this.category = category;
         this.imageUrl = imageUrl;
     }
+
+    public void updateStockQuantity(int quantity, boolean isAddable) {
+        if (isAddable)
+            this.stockQuantity += quantity;
+        else if (this.stockQuantity - quantity >= 0)
+            this.stockQuantity -= quantity;
+    }
 }
