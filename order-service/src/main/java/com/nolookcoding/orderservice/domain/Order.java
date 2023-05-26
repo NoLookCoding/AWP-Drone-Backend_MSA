@@ -4,14 +4,19 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+import java.util.List;
 
 @Entity
 @Getter
+@ToString
 @NoArgsConstructor
 @Table(name = "Orders")
-public class Order extends BaseEntity{
+public class Order extends BaseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ORDER_ID")
     private Long id;
 
@@ -37,9 +42,11 @@ public class Order extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private OrderState orderState;
 
+    @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE)
+    private List<DetailOrder> detailOrders;
+
     @Builder
-    public Order(Long id, Long userId, int totalPrice, String receiver, String phoneNumber, String address, String orderUUID, String requestOption, OrderState orderState) {
-        this.id = id;
+    public Order(Long userId, int totalPrice, String receiver, String phoneNumber, String address, String orderUUID, String requestOption, OrderState orderState) {
         this.userId = userId;
         this.totalPrice = totalPrice;
         this.receiver = receiver;
@@ -48,5 +55,13 @@ public class Order extends BaseEntity{
         this.orderUUID = orderUUID;
         this.requestOption = requestOption;
         this.orderState = orderState;
+    }
+
+    public void updateOrderState(OrderState orderState) {
+        this.orderState = orderState;
+    }
+
+    public void setTotalPrice(int totalPrice) {
+        this.totalPrice = totalPrice;
     }
 }
