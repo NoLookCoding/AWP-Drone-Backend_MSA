@@ -4,8 +4,14 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class UserUpdateDto {
+@Builder
+public class UserProfileDto {
+    private Long index;
+    private String userId;
+    private String name;
     private String address;
     private String phone;
+    private Integer age;
+    private String sex;
     private String email;
 }

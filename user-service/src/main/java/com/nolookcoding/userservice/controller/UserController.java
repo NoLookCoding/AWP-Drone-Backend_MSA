@@ -1,19 +1,12 @@
 package com.nolookcoding.userservice.controller;
 
-import com.nolookcoding.userservice.domain.SessionConst;
 import com.nolookcoding.userservice.domain.SessionManager;
 import com.nolookcoding.userservice.domain.User;
-import com.nolookcoding.userservice.dto.LoginDto;
-import com.nolookcoding.userservice.dto.UserGetIdDto;
-import com.nolookcoding.userservice.dto.UserJoinDto;
-import com.nolookcoding.userservice.dto.UserUpdateDto;
+import com.nolookcoding.userservice.dto.*;
 import com.nolookcoding.userservice.service.UserService;
 import java.util.Objects;
-import java.util.Optional;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,78 +19,115 @@ public class UserController {
     private final SessionManager sessionManager;
 
     @PostMapping({"/users"})
-    public ResponseEntity<Objects> join(@ModelAttribute UserJoinDto request) {
+    public ResponseEntity<Objects> join(@RequestBody UserJoinDto request) {
         userService.join(request.toUserEntity());
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping({"/users/{userId}"})
-    public ResponseEntity<Objects> userUpdate(@PathVariable Long userId, @ModelAttribute UserUpdateDto userRequest) {
-        userService.update(userId, userRequest);
-        return new ResponseEntity(HttpStatus.OK);
+    @PostMapping({"/users/update"})
+    public ResponseEntity<Objects> userUpdate(@RequestHeader("JSESSIONID") String value, @RequestBody UserUpdateDto userRequest) {
+        Long userIndex = sessionManager.getSession(value);
+        if (userIndex == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        userService.update(userIndex, userRequest);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping({"/users/{inputId}"})
-    public ResponseEntity<Boolean> duplicateIdCheck(@PathVariable String inputId) {
-        return new ResponseEntity(userService.duplicateIdCheck(inputId), HttpStatus.OK);
+    @PostMapping({"/users/validation/{inputId}"})
+    public ResponseEntity<Object> isDuplicateId(@PathVariable String inputId) {
+        if (userService.isDuplicateId(inputId)) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/users/user-profile")
+    public ResponseEntity<UserProfileDto> getUserProfile(@RequestHeader("JSESSIONID") String value) {
+        Long userIndex = sessionManager.getSession(value);
+        if (userIndex == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        User user = userService.findOne(userIndex);
+        return new ResponseEntity<>(user.toUserProfile(), HttpStatus.OK);
     }
 
     @PostMapping({"/users/id"})
-    public ResponseEntity<String> getUserId(@ModelAttribute UserGetIdDto request) {
-        return new ResponseEntity(userService.findUserId(request), HttpStatus.OK);
+    public ResponseEntity<String> getUserId(@RequestBody UserGetIdDto request) {
+        return new ResponseEntity<>(userService.findUserId(request), HttpStatus.OK);
     }
 
-    @DeleteMapping({"/users/{userId}"})
-    public ResponseEntity<Objects> delete(@PathVariable Long userId) {
-        userService.delete(userId);
-        return new ResponseEntity(HttpStatus.OK);
+    @DeleteMapping({"/users/delete"})
+    public ResponseEntity<Objects> delete(@RequestHeader("JSESSIONID") String value) {
+        Long userIndex = sessionManager.getSession(value);
+        if (userIndex == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        userService.delete(userIndex);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/users/password")
-    public ResponseEntity<Objects> updatePassword(@RequestParam Long userId, @RequestParam String origin, @RequestParam String change) {
-        userService.updatePassword(userId, origin, change);
-        return new ResponseEntity(HttpStatus.OK);
+    public ResponseEntity<Objects> updatePassword(@RequestHeader("JSESSIONID") String value,
+                                                  @RequestBody PasswordUpdateDto request) {
+        Long userIndex = sessionManager.getSession(value);
+        if (userIndex == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        userService.updatePassword(userIndex, request);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/users/validation")
-    public ResponseEntity<Boolean> inputValidation(@ModelAttribute UserJoinDto userInput) {
-        return new ResponseEntity<Boolean>(userService.inputValidation(userInput), HttpStatus.OK);
+    public ResponseEntity<Boolean> inputValidation(@RequestBody UserJoinDto userInput) {
+        return new ResponseEntity<>(userService.inputValidation(userInput), HttpStatus.OK);
     }
 
     @PostMapping("/users/login")
-    public ResponseEntity<User> login(@ModelAttribute LoginDto loginInput, HttpServletRequest request) {
+    public ResponseEntity<Cookie> login(@RequestBody LoginDto loginInput) {
         User loginUser = userService.login(loginInput);
 
         if (loginUser == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        } else {
-            HttpSession session = request.getSession();
-            session.setAttribute(SessionConst.sessionId, loginUser.getUserId());
         }
 
-        return new ResponseEntity<>(loginUser, HttpStatus.OK);
+        Cookie responseCookie = sessionManager.createSession(loginUser);
+        return new ResponseEntity<>(responseCookie, HttpStatus.OK);
     }
 
-    @GetMapping("/")
-    public ResponseEntity<User> home(HttpServletRequest request) {
-        String userId = sessionManager.getSession(request);
-        
-        // 유효한 쿠키를 찾지 못하면 null 리턴
-        if (userId == null) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
-        
-        // findUser에서 터질 수 있음
-        User findUser = userService.findByUserId(userId);
-        if (findUser != null) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-    }
+//    @GetMapping("/")
+//    public ResponseEntity<User> home(HttpServletRequest request) {
+//        String userId = sessionManager.getSession(request);
+//
+//        // 유효한 쿠키를 찾지 못하면 null 리턴
+//        if (userId == null) {
+//            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+//        }
+//
+//        // findUser에서 터질 수 있음
+//        User findUser = userService.findByUserId(userId);
+//        if (findUser != null) {
+//            return new ResponseEntity<>(HttpStatus.OK);
+//        }
+//        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+//    }
 
-    @PostMapping("logout")
-    public ResponseEntity<Object> logout(HttpServletRequest request) {
-        sessionManager.sessionExpire(request);
+    @PostMapping("/users/logout")
+    public ResponseEntity<Object> logout(@RequestHeader("JSESSIONID") String value) {
+        sessionManager.sessionExpire(value);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/users/session-check")
+    public ResponseEntity<Long> sessionCheck(@RequestHeader("JSESSIONID") String value) {
+        Long sessionRes = userService.validateSession(value);
+        // 세션 검증
+        if (sessionRes == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+        return new ResponseEntity<>(sessionRes, HttpStatus.OK);
     }
 }
