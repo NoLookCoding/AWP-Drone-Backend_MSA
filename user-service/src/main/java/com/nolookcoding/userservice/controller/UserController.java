@@ -128,6 +128,6 @@ public class UserController {
         if (sessionRes == null) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
-        return new ResponseEntity<>(sessionRes, HttpStatus.OK);
+        return new ResponseEntity<>(sessionRes, HttpStatus.OK); 
     }
 }
