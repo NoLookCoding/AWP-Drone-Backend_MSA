@@ -10,16 +10,15 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Entity
-@Table(name = "USER_TB")
 @NoArgsConstructor
 public class User {
     @Id
-    @Column(nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long index;
+    @Column(name = "USER_ID")
+    private Long id;
     @Column(nullable = false)
     private String dataState;
-    @Column(nullable = false, name = "USER_ID")
+    @Column(nullable = false, name = "UID")
     private String userId;
     @Column(nullable = false)
     private String password;
@@ -57,7 +56,7 @@ public class User {
 
     public UserProfileDto toUserProfile() {
         return UserProfileDto.builder()
-                .index(this.index)
+                .index(this.id)
                 .userId(this.userId)
                 .name(this.name)
                 .address(this.address)
