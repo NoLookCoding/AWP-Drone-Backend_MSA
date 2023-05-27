@@ -17,7 +17,7 @@ public class SessionManager {
     public Cookie createSession(User user) {
         String token = UUID.randomUUID().toString();
         Cookie cookie = new Cookie(SessionConst.sessionId, token);
-        store.put(token, user.getIndex());
+        store.put(token, user.getId());
         return cookie;
     }
 
