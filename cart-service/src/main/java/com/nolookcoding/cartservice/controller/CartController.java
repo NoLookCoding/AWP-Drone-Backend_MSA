@@ -19,9 +19,9 @@ public class CartController {
 
     private final CartService cartService;
 
-    @PostMapping("/{userId}")
-    public ResponseEntity<Map<String, Long>> createCart(@PathVariable Long userId, @RequestBody CartRequestDTO cartRequestDTO) {
-        Long cartId = cartService.createCart(userId, cartRequestDTO);
+    @PostMapping("")
+    public ResponseEntity<Map<String, Long>> createCart(@RequestHeader("JSESSIONID") String session, @RequestBody CartRequestDTO cartRequestDTO) {
+        Long cartId = cartService.createCart(session, cartRequestDTO);
         Map<String, Long> response = new HashMap<>();
         response.put("cartId", cartId);
 
@@ -40,9 +40,9 @@ public class CartController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<CartListDTO>> getCartsByUserId(@PathVariable Long userId) {
-        List<CartListDTO> carts = cartService.getCartsByUserId(userId);
+    @GetMapping("")
+    public ResponseEntity<List<CartListDTO>> getCartsByUserId(@RequestHeader("JSESSIONID") String value) {
+        List<CartListDTO> carts = cartService.getCartsByUserId(value);
         return ResponseEntity.ok(carts);
     }
 

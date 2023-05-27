@@ -31,7 +31,7 @@ public class OrderService {
     private final CartServiceFeignClient cartServiceFeignClient;
 
     @Transactional
-    public Long createDirectOrder(DirectOrderCreateDTO directOrderCreateDTO) {
+    public Long createDirectOrder(DirectOrderCreateDTO directOrderCreateDTO, Long userId) {
         ResponseEntity<DetailProductDTO> response = productServiceFeignClient.loadDetailProduct(directOrderCreateDTO.getProductId());
         int totalPrice = -1;
         if (response.getStatusCode() == HttpStatus.OK) {
@@ -52,7 +52,7 @@ public class OrderService {
                 .orderState(OrderState.PAID)
                 .phoneNumber(directOrderCreateDTO.getPhoneNumber())
                 .requestOption(directOrderCreateDTO.getRequestOption())
-                .userId(directOrderCreateDTO.getUserId())
+                .userId(userId)
                 .totalPrice(totalPrice)
                 .build();
 
@@ -76,7 +76,7 @@ public class OrderService {
     }
 
     @Transactional
-    public Long createCartOrder(CartOrderCreateDTO cartOrderCreateDTO, List<CartListDTO> cartListDTO) {
+    public Long createCartOrder(CartOrderCreateDTO cartOrderCreateDTO, List<CartListDTO> cartListDTO, Long userId) {
         Order order = Order.builder()
                 .orderUUID(generateRandomUID())
                 .address(cartOrderCreateDTO.getAddress())
@@ -84,7 +84,7 @@ public class OrderService {
                 .orderState(OrderState.PAID)
                 .phoneNumber(cartOrderCreateDTO.getPhoneNumber())
                 .requestOption(cartOrderCreateDTO.getRequestOption())
-                .userId(cartOrderCreateDTO.getUserId())
+                .userId(userId)
                 .build();
 
         int totalPrice = 0;

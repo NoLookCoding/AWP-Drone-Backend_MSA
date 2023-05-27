@@ -1,6 +1,7 @@
 package com.nolookcoding.cartservice.service;
 
 import com.nolookcoding.cartservice.controller.ProductServiceFeignClient;
+import com.nolookcoding.cartservice.controller.UserServiceFeignClient;
 import com.nolookcoding.cartservice.domain.Cart;
 import com.nolookcoding.cartservice.dto.CartListDTO;
 import com.nolookcoding.cartservice.dto.CartRequestDTO;
@@ -21,9 +22,20 @@ public class CartService {
 
     private final CartRepository cartRepository;
     private final ProductServiceFeignClient productServiceFeignClient;
+    private final UserServiceFeignClient userServiceFeignClient;
 
-    public Long createCart(Long userId, CartRequestDTO cartRequestDTO) {
+    public Long createCart(String sessionValue, CartRequestDTO cartRequestDTO) {
 
+        Long userId = null;
+        if (sessionValue != null) {
+            ResponseEntity<Long> chk = userServiceFeignClient.sessionCheck(sessionValue);
+            if (chk.getStatusCode() == HttpStatus.OK) {
+                if (chk.getBody() != null) {
+                    userId = chk.getBody();
+                }
+            }
+        } else
+            return null;
         ResponseEntity<DetailProductDTO> response = productServiceFeignClient.loadDetailProduct(cartRequestDTO.getProductId());
         if (response.getStatusCode() == HttpStatus.OK) {
             if (response.getBody() != null) {
@@ -59,8 +71,15 @@ public class CartService {
         cartRepository.deleteById(cartId);
     }
 
+    public List<CartListDTO> getCartsByUserId(String sessionValue) {
 
-    public List<CartListDTO> getCartsByUserId(Long userId) {
+        Long userId = null;
+        ResponseEntity<Long> sessionCheck = userServiceFeignClient.sessionCheck(sessionValue);
+        if (sessionCheck.getStatusCode() == HttpStatus.OK) {
+            if (sessionCheck.getBody() != null) {
+                userId = sessionCheck.getBody();
+            }
+        }
         List<Cart> carts = cartRepository.findAllByDataStateIsNullAndUserId(userId);
         return carts.stream().map(c -> {
             ResponseEntity<DetailProductDTO> response = productServiceFeignClient.loadDetailProduct(c.getProductId());
