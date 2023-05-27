@@ -1,5 +1,6 @@
 package com.nolookcoding.userservice.controller;
 
+import com.nolookcoding.userservice.domain.SessionConst;
 import com.nolookcoding.userservice.domain.SessionManager;
 import com.nolookcoding.userservice.domain.User;
 import com.nolookcoding.userservice.dto.*;
@@ -8,6 +9,7 @@ import java.util.Objects;
 
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,13 +22,13 @@ public class UserController {
     private final SessionManager sessionManager;
 
     @PostMapping({"/users"})
-    public ResponseEntity<Objects> join(@RequestBody UserJoinDto request) {
+    public ResponseEntity<Object> join(@RequestBody UserJoinDto request) {
         userService.join(request.toUserEntity());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping({"/users/update"})
-    public ResponseEntity<Objects> userUpdate(@RequestHeader("JSESSIONID") String value, @RequestBody UserUpdateDto userRequest) {
+    public ResponseEntity<Object> userUpdate(@RequestHeader("JSESSIONID") String value, @RequestBody UserUpdateDto userRequest) {
         Long userIndex = sessionManager.getSession(value);
         if (userIndex == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -60,7 +62,7 @@ public class UserController {
     }
 
     @DeleteMapping({"/users/delete"})
-    public ResponseEntity<Objects> delete(@RequestHeader("JSESSIONID") String value) {
+    public ResponseEntity<Object> delete(@RequestHeader("JSESSIONID") String value) {
         Long userIndex = sessionManager.getSession(value);
         if (userIndex == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -71,7 +73,7 @@ public class UserController {
     }
 
     @PostMapping("/users/password")
-    public ResponseEntity<Objects> updatePassword(@RequestHeader("JSESSIONID") String value,
+    public ResponseEntity<Object> updatePassword(@RequestHeader("JSESSIONID") String value,
                                                   @RequestBody PasswordUpdateDto request) {
         Long userIndex = sessionManager.getSession(value);
         if (userIndex == null) {
@@ -88,15 +90,16 @@ public class UserController {
     }
 
     @PostMapping("/users/login")
-    public ResponseEntity<Cookie> login(@RequestBody LoginDto loginInput) {
+    public ResponseEntity<Object> login(@RequestBody LoginDto loginInput) {
         User loginUser = userService.login(loginInput);
 
         if (loginUser == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
-        Cookie responseCookie = sessionManager.createSession(loginUser);
-        return new ResponseEntity<>(responseCookie, HttpStatus.OK);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.SET_COOKIE, SessionConst.sessionId + "=" + sessionManager.createSession(loginUser));
+        return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 
 //    @GetMapping("/")

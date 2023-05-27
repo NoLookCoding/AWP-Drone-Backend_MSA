@@ -1,8 +1,6 @@
 package com.nolookcoding.userservice.domain;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -14,18 +12,17 @@ public class SessionManager {
 
     private static Map<String, Long> store = new ConcurrentHashMap<>();
 
-    public Cookie createSession(User user) {
+    public String createSession(User user) {
         String token = UUID.randomUUID().toString();
-        Cookie cookie = new Cookie(SessionConst.sessionId, token);
         store.put(token, user.getId());
-        return cookie;
+        return token;
     }
 
     public Long getSession(String value) {
-        return findCookie(value);
+        return findValue(value);
     }
 
-    public Long findCookie(String value) {
+    public Long findValue(String value) {
         if (store.containsKey(value)) {
             return store.get(value);
         }
