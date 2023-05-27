@@ -21,6 +21,7 @@ public class OrderAPI {
 
     private final OrderService orderService;
     private final CartServiceFeignClient cartServiceFeignClient;
+    private final UserServiceFeignClient userServiceFeignClient;
 
     /**
      * 장바구니로 상품 주문 API
@@ -30,14 +31,18 @@ public class OrderAPI {
      */
     @PostMapping("/cart")
     public ResponseEntity<Map<String, Long>> orderInCart(
-            @RequestBody CartOrderCreateDTO cartOrderCreateDTO
+            @RequestBody CartOrderCreateDTO cartOrderCreateDTO,
+            @RequestHeader("JSESSIONID") String session
     ) {
-        ResponseEntity<List<CartListDTO>> cartsByUserId = cartServiceFeignClient.getCartsByUserId(cartOrderCreateDTO.getUserId());
+
+        Long userId = validateSession(session);
+
+        ResponseEntity<List<CartListDTO>> cartsByUserId = cartServiceFeignClient.getCartsByUserId(userId);
 
         if (cartsByUserId.getStatusCode() == HttpStatus.OK) {
 
             if (cartsByUserId.getBody() != null) {
-                Long order = orderService.createCartOrder(cartOrderCreateDTO, cartsByUserId.getBody());
+                Long order = orderService.createCartOrder(cartOrderCreateDTO, cartsByUserId.getBody(), userId);
                 Map<String, Long> response = new HashMap<>();
                 response.put("orderId", order);
                 return ResponseEntity.ok().body(response);
@@ -57,9 +62,12 @@ public class OrderAPI {
      */
     @PostMapping("/direct")
     public ResponseEntity<Map<String, Long>> orderInDirect(
-            @RequestBody DirectOrderCreateDTO directOrderCreateDTO
+            @RequestBody DirectOrderCreateDTO directOrderCreateDTO,
+            @RequestHeader("JSESSIONID") String session
     ) {
-        Long orderId = orderService.createDirectOrder(directOrderCreateDTO);
+        Long userId = validateSession(session);
+
+        Long orderId = orderService.createDirectOrder(directOrderCreateDTO, userId);
         Map<String, Long> response = new LinkedHashMap<>();
         response.put("orderId", orderId);
         return ResponseEntity.ok().body(response);
@@ -68,20 +76,21 @@ public class OrderAPI {
     /**
      * 특정 유저의 전체 주문 내역 조회 API
      *
-     * @param userId       주문 내역을 가져올 유저 ID
+     * @param session      주문 내역을 가져올 유저 세션 ID
      * @param cursor       페이지 시작점
      * @param size         가져올 페이지 개수
      * @param isReceivable 주문 필터 옵션 (true: 주문 완료, 배송 준비 중, 배송 중 | false: 배송 완료, 취소)
      * @return 주문 리스트
      */
-    @GetMapping("/{userId}")
+    @GetMapping("")
     public ResponseEntity<List<RealOrderListDTO>> loadOrdersOfUser(
-            @PathVariable("userId") Long userId,
+            @RequestHeader("JSESSION") String session,
             @RequestParam("cursor") int cursor,
             @RequestParam("size") int size,
             @RequestParam(value = "filter", required = false) Boolean isReceivable
     ) {
 
+        Long userId = validateSession(session);
         List<RealOrderListDTO> orders = orderService.getAllOrders(isReceivable, cursor, size, userId);
         return ResponseEntity.ok().body(orders);
     }
@@ -129,5 +138,15 @@ public class OrderAPI {
         orderService.changeOrderState(orderId, OrderState.findCategoryByString(newState.get("orderState")));
 
         return ResponseEntity.ok().build();
+    }
+
+    private Long validateSession(String session) {
+        ResponseEntity<Long> sessionCheck = userServiceFeignClient.sessionCheck(session);
+        if (sessionCheck.getStatusCode() == HttpStatus.OK) {
+            if (sessionCheck.getBody() != null) {
+                return sessionCheck.getBody();
+            }
+        }
+        return null;
     }
 }
