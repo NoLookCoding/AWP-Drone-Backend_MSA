@@ -5,10 +5,10 @@ spring:
   application:
     name: product-service
   datasource:
-    url: jdbc:h2:tcp://localhost/~/nolook
-    username: sa
+    url: jdbc:mysql://3.36.90.145:3306/nolook?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: root
     password: 1234
-    driver-class-name: org.h2.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
@@ -26,4 +26,4 @@ eureka:
     registerWithEureka: true
     fetchRegistry: true
   serviceUrl:
-    defaultZone: http://127.0.0.1:8761/eureka/
+    defaultZone: http://3.36.90.145:8761/eureka/
