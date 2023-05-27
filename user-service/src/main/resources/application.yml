@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: product-service
+    name: user-service
   datasource:
     url: jdbc:mysql://3.36.90.145:3306/nolook?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
     username: root
