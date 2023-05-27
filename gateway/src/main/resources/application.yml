@@ -6,7 +6,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://3.36.90.145:8761/eureka
 
 spring:
   application:
@@ -15,18 +15,18 @@ spring:
     gateway:
       routes:
         - id: product-service
-          uri: http://localhost:8081
+          uri: http://3.36.90.145:8081
           predicates:
             - Path=/products/**
         - id: order-service
-          uri: http://localhost:8083
+          uri: http://3.36.90.145:8083
           predicates:
             - Path=/orders/**
         - id: cart-service
-          uri: http://localhost:8084
+          uri: http://3.36.90.145:8084
           predicates:
             - Path=/carts/**
         - id: user-service
-          uri: http://localhost:8085
+          uri: http://3.36.90.145:8085
           predicates:
             - Path=/users/**
