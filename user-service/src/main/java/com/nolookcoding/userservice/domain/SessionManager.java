@@ -1,5 +1,6 @@
 package com.nolookcoding.userservice.domain;
 
+import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;

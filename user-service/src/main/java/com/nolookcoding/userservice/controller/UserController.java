@@ -98,7 +98,7 @@ public class UserController {
         }
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set(SessionConst.sessionId, sessionManager.createSession(loginUser));
+        headers.set(HttpHeaders.SET_COOKIE, SessionConst.sessionId + "=" + sessionManager.createSession(loginUser));
         return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 
