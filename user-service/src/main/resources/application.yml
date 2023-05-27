@@ -1,0 +1,29 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: product-service
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/nolook
+    username: sa
+    password: 1234
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+eureka:
+  instance:
+    preferIpAddress: true
+    lease-renewal-interval-in-seconds: 30
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+  serviceUrl:
+    defaultZone: http://127.0.0.1:8761/eureka/

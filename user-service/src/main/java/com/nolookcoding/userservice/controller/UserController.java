@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -128,6 +129,6 @@ public class UserController {
         if (sessionRes == null) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
-        return new ResponseEntity<>(sessionRes, HttpStatus.OK); 
+        return new ResponseEntity<>(sessionRes, HttpStatus.OK);
     }
 }
