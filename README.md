@@ -5,9 +5,9 @@
 ## Back-end Member of Team NoLookCoding
 | Student ID | Member | Role                                              |
 | ---------- | ------ | ------------------------------------------------- |
-| 201935043  | 문희상 | Cart Service                                      |
-| 201935069  | 신승건 | Order Service, Product Service, MSA & Gateway, AWS & DB |
-| 201935114  | 이현석 | User Service, CI/CD(Jenkins)                      |
+| 201935043  | 문희상 | Cart API                                      |
+| 201935069  | 신승건 | Order API, Product API, MSA & Gateway, AWS & DB |
+| 201935114  | 이현석 | User API, CI/CD(Jenkins)                      |
 
 ---
 
