@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final SessionManager sessionManager;
+//    private final SessionManager sessionManager;
 
     @Transactional
     public void join(User user) {
@@ -32,7 +32,6 @@ public class UserServiceImpl implements UserService {
     public void update(Long id, UserUpdateDto request) {
         User user = this.findOne(id);
         user.updateInfo(request);
-        this.userRepository.save(user);
     }
 
     public User findOne(Long id) {
@@ -74,7 +73,6 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException();
         });
         user.updatePassword(request.getChange());
-        userRepository.save(user);
     }
 
     @Override
@@ -102,9 +100,9 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    @Override
-    public Long validateSession(String value) {
-        return sessionManager.getSession(value);
-    }
+//    @Override
+//    public Long validateSession(String value) {
+//        return sessionManager.getSession(value);
+//    }
 
 }
