@@ -56,7 +56,7 @@ public class User {
 
     public UserProfileDto toUserProfile() {
         return UserProfileDto.builder()
-                .index(this.id)
+                .id(this.id)
                 .userId(this.userId)
                 .name(this.name)
                 .address(this.address)

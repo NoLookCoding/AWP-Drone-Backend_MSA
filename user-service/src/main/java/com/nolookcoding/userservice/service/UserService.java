@@ -24,5 +24,5 @@ public interface UserService {
 
     User login(LoginDto loginInput);
 
-    Long validateSession(String value);
+//    Long validateSession(String value);
 }

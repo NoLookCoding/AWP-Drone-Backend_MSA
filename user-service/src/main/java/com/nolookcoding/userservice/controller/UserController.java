@@ -1,15 +1,13 @@
 package com.nolookcoding.userservice.controller;
 
-import com.nolookcoding.userservice.domain.SessionConst;
-import com.nolookcoding.userservice.domain.SessionManager;
 import com.nolookcoding.userservice.domain.User;
 import com.nolookcoding.userservice.dto.*;
 import com.nolookcoding.userservice.service.UserService;
-import java.util.Objects;
 
-import jakarta.servlet.http.Cookie;
+import java.util.HashMap;
+import java.util.Map;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final SessionManager sessionManager;
 
     @PostMapping({"/users"})
     public ResponseEntity<Object> join(@RequestBody UserJoinDto request) {
@@ -28,13 +25,12 @@ public class UserController {
     }
 
     @PostMapping({"/users/update"})
-    public ResponseEntity<Object> userUpdate(@RequestHeader("JSESSIONID") String value, @RequestBody UserUpdateDto userRequest) {
-        Long userIndex = sessionManager.getSession(value);
-        if (userIndex == null) {
+    public ResponseEntity<Object> userUpdate(@RequestBody UserUpdateDto userRequest) {
+        Long idx = userRequest.getId();
+        if (idx == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
-        userService.update(userIndex, userRequest);
+        userService.update(idx, userRequest);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -47,12 +43,12 @@ public class UserController {
     }
 
     @GetMapping("/users/user-profile")
-    public ResponseEntity<UserProfileDto> getUserProfile(@RequestHeader("JSESSIONID") String value) {
-        Long userIndex = sessionManager.getSession(value);
-        if (userIndex == null) {
+    public ResponseEntity<UserProfileDto> getUserProfile(@RequestBody Map<String, Long> map) {
+        Long idx = map.get("userIdx");
+        if (idx == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        User user = userService.findOne(userIndex);
+        User user = userService.findOne(idx);
         return new ResponseEntity<>(user.toUserProfile(), HttpStatus.OK);
     }
 
@@ -62,25 +58,22 @@ public class UserController {
     }
 
     @DeleteMapping({"/users/delete"})
-    public ResponseEntity<Object> delete(@RequestHeader("JSESSIONID") String value) {
-        Long userIndex = sessionManager.getSession(value);
-        if (userIndex == null) {
+    public ResponseEntity<Object> delete(@RequestBody Map<String, Long> map) {
+        Long idx = map.get("userIdx");
+        if (idx == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
-        userService.delete(userIndex);
+        userService.delete(idx);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/users/password")
-    public ResponseEntity<Object> updatePassword(@RequestHeader("JSESSIONID") String value,
-                                                  @RequestBody PasswordUpdateDto request) {
-        Long userIndex = sessionManager.getSession(value);
-        if (userIndex == null) {
+    public ResponseEntity<Object> updatePassword(@RequestBody PasswordUpdateDto request) {
+        Long id = request.getId();
+        if (id == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
-        userService.updatePassword(userIndex, request);
+        userService.updatePassword(id, request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -90,16 +83,14 @@ public class UserController {
     }
 
     @PostMapping("/users/login")
-    public ResponseEntity<Object> login(@RequestBody LoginDto loginInput) {
+    public ResponseEntity<Map> login(@RequestBody LoginDto loginInput) {
         User loginUser = userService.login(loginInput);
-
         if (loginUser == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.SET_COOKIE, SessionConst.sessionId + "=" + sessionManager.createSession(loginUser));
-        return new ResponseEntity<>(headers, HttpStatus.OK);
+        Map<String, Long> map = new HashMap<>();
+        map.put("userIdx", loginUser.getId());
+        return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
 //    @GetMapping("/")
@@ -119,19 +110,18 @@ public class UserController {
 //        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 //    }
 
-    @PostMapping("/users/logout")
-    public ResponseEntity<Object> logout(@RequestHeader("JSESSIONID") String value) {
-        sessionManager.sessionExpire(value);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+//    @PostMapping("/users/logout")
+//    public ResponseEntity<Object> logout(@RequestBody Long idx) {
+//        return new ResponseEntity<>(HttpStatus.OK);
+//    }
 
-    @PostMapping("/users/session-check")
-    public ResponseEntity<Long> sessionCheck(@RequestHeader("JSESSIONID") String value) {
-        Long sessionRes = userService.validateSession(value);
-        // 세션 검증
-        if (sessionRes == null) {
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-        }
-        return new ResponseEntity<>(sessionRes, HttpStatus.OK);
-    }
+//    @PostMapping("/users/session-check")
+//    public ResponseEntity<Long> sessionCheck(@RequestHeader("JSESSIONID") String value) {
+//        Long sessionRes = userService.validateSession(value);
+//        // 세션 검증
+//        if (sessionRes == null) {
+//            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+//        }
+//        return new ResponseEntity<>(sessionRes, HttpStatus.OK);
+//    }
 }
