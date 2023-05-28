@@ -42,8 +42,8 @@ public class UserController {
     }
 
     @GetMapping("/users/user-profile")
-    public ResponseEntity<UserProfileDto> getUserProfile(@RequestBody Map<String, Long> map) {
-        Long idx = map.get("userIdx");
+    public ResponseEntity<UserProfileDto> getUserProfile(@RequestBody UserRequestDto userRequestDto) {
+        Long idx = userRequestDto.getUserIdx();
         if (idx == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -57,8 +57,8 @@ public class UserController {
     }
 
     @DeleteMapping({"/users/delete"})
-    public ResponseEntity<Object> delete(@RequestBody Map<String, Long> map) {
-        Long idx = map.get("userIdx");
+    public ResponseEntity<Object> delete(@RequestBody UserRequestDto userRequestDto) {
+        Long idx = userRequestDto.getUserIdx();
         if (idx == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
