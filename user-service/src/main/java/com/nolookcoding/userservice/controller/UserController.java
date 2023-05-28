@@ -37,8 +37,8 @@ public class UserController {
     }
 
     @PostMapping({"/users/validation/{inputId}"})
-    public ResponseEntity<Object> isDuplicateId(@PathVariable String id) {
-        if (userService.isDuplicateId(id)) {
+    public ResponseEntity<Object> isDuplicateId(@PathVariable String inputId) {
+        if (userService.isDuplicateId(inputId)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(HttpStatus.OK);
@@ -59,11 +59,11 @@ public class UserController {
     }
 
     @DeleteMapping({"/users/delete"})
-    public ResponseEntity<Object> delete(@RequestBody Long idx) {
-        if (idx == null) {
+    public ResponseEntity<Object> delete(@RequestBody Long id) {
+        if (id == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        userService.delete(idx);
+        userService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
