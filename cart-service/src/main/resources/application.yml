@@ -9,14 +9,9 @@ spring:
     username: root
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
-#  datasource: # 내가 H2 DB 써서 일단 MySQL은 주석 쳐놨음
-#    url: jdbc:h2:tcp://localhost/~/nolook
-#    username: sa
-#    password: 1234
-#    driver-class-name: org.h2.Driver
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         show_sql: true
