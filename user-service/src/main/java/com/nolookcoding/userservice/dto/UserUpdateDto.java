@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class UserUpdateDto {
-    private Long idx;
+    private Long id;
     private String address;
     private String phone;
     private String email;

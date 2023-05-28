@@ -28,28 +28,28 @@ public class UserController {
 
     @PostMapping({"/users/update"})
     public ResponseEntity<Object> userUpdate(@RequestBody UserUpdateDto userRequest) {
-        Long userIndex = userRequest.getIdx();
-        if (userIndex == null) {
+        Long id = userRequest.getId();
+        if (id == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        userService.update(userIndex, userRequest);
+        userService.update(id, userRequest);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping({"/users/validation/{inputId}"})
-    public ResponseEntity<Object> isDuplicateId(@PathVariable String inputId) {
-        if (userService.isDuplicateId(inputId)) {
+    public ResponseEntity<Object> isDuplicateId(@PathVariable String id) {
+        if (userService.isDuplicateId(id)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/users/user-profile")
-    public ResponseEntity<UserProfileDto> getUserProfile(@RequestBody Long idx) {
-        if (idx == null) {
+    public ResponseEntity<UserProfileDto> getUserProfile(@RequestBody Long id) {
+        if (id == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        User user = userService.findOne(idx);
+        User user = userService.findOne(id);
         return new ResponseEntity<>(user.toUserProfile(), HttpStatus.OK);
     }
 
@@ -69,11 +69,11 @@ public class UserController {
 
     @PostMapping("/users/password")
     public ResponseEntity<Object> updatePassword(@RequestBody PasswordUpdateDto request) {
-        Long userIndex = request.getIdx();
-        if (userIndex == null) {
+        Long id = request.getId();
+        if (id == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        userService.updatePassword(userIndex, request);
+        userService.updatePassword(id, request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
