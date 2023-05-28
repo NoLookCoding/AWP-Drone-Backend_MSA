@@ -152,6 +152,7 @@ public class OrderService {
                     .orderUUID(m.getOrderUUID())
                     .orderId(m.getId())
                     .createdDate(m.getCreatedDate())
+                    .orderState(m.getOrderState())
                     .products(productDTOList)
                     .build();
 
