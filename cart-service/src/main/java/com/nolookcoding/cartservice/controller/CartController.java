@@ -19,9 +19,9 @@ public class CartController {
 
     private final CartService cartService;
 
-    @PostMapping("")
-    public ResponseEntity<Map<String, Long>> createCart(@RequestHeader("JSESSIONID") String session, @RequestBody CartRequestDTO cartRequestDTO) {
-        Long cartId = cartService.createCart(session, cartRequestDTO);
+    @PostMapping("/{userId}")
+    public ResponseEntity<Map<String, Long>> createCart(@PathVariable("userId") Long userId, @RequestBody CartRequestDTO cartRequestDTO) {
+        Long cartId = cartService.createCart(userId, cartRequestDTO);
         Map<String, Long> response = new HashMap<>();
         response.put("cartId", cartId);
 
@@ -29,20 +29,20 @@ public class CartController {
     }
 
     @PutMapping("/{cartId}/quantity")
-    public ResponseEntity<Void> updateCart(@PathVariable Long cartId, @RequestBody UpdateStockQuantityDTO updateStockQuantityDTO) {
+    public ResponseEntity<Void> updateCart(@PathVariable("cartId") Long cartId, @RequestBody UpdateStockQuantityDTO updateStockQuantityDTO) {
         cartService.updateCart(cartId, updateStockQuantityDTO.getQuantity(), updateStockQuantityDTO.isAddable());
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{cartId}")
-    public ResponseEntity<Void> deleteCart(@PathVariable Long cartId) {
+    public ResponseEntity<Void> deleteCart(@PathVariable("cartId") Long cartId) {
         cartService.deleteCart(cartId);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("")
-    public ResponseEntity<List<CartListDTO>> getCartsByUserId(@RequestHeader("JSESSIONID") String value) {
-        List<CartListDTO> carts = cartService.getCartsByUserId(value);
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<CartListDTO>> getCartsByUserId(@PathVariable("userId") Long userId) {
+        List<CartListDTO> carts = cartService.getCartsByUserId(userId);
         return ResponseEntity.ok(carts);
     }
 
