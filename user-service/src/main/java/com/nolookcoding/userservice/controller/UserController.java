@@ -41,9 +41,8 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/users/user-profile")
-    public ResponseEntity<UserProfileDto> getUserProfile(@RequestBody UserRequestDto userRequestDto) {
-        Long idx = userRequestDto.getUserIdx();
+    @GetMapping("/users/{userIdx}")
+    public ResponseEntity<UserProfileDto> getUserProfile(@PathVariable("userIdx") Long idx) {
         if (idx == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
