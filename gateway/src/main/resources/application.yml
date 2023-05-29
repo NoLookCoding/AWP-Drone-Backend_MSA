@@ -25,18 +25,18 @@ spring:
             allow-credentials: true
       routes:
         - id: product-service
-          uri: http://13.209.13.212:8081
+          uri: lb://PRODUCT-SERVICE
           predicates:
             - Path=/products/**
         - id: order-service
-          uri: http://13.209.13.212:8083
+          uri: lb://ORDER-SERVICE
           predicates:
             - Path=/orders/**
         - id: cart-service
-          uri: http://13.209.13.212:8084
+          uri: lb://CART-SERVICE
           predicates:
             - Path=/carts/**
         - id: user-service
-          uri: http://13.209.13.212:8085
+          uri: lb://USER-SERVICE
           predicates:
             - Path=/users/**
