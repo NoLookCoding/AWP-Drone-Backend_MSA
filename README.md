@@ -34,3 +34,6 @@
 - JDK: 17
 - Spring Boot: 3.0.7
 - Gradle: 7.6.1
+
+## REST API Document
+https://colorful-search-1d1.notion.site/REST-API-fb1077955fc748b2913192d8b3219156
